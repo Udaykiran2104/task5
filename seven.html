@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Capstone E-Commerce</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    #cart {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 18px;
+    }
+
+    .controls {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .controls input,
+    .controls select {
+      padding: 8px;
+      margin: 5px;
+      font-size: 16px;
+    }
+
+    .product-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .product-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-card img {
+      width: 100%;
+      max-height: 250px;
+      object-fit: contain;
+      border-radius: 8px;
+      background: white;
+      padding: 20px;
+    }
+
+    button {
+      background: #0a74da;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #075ec9;
+    }
+
+    #cart-message {
+      margin-top: 20px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      .product-card {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Capstone Shop</h1>
+    <div id="cart">
+      🛒 Cart: <span id="cart-count">0</span>
+      <button onclick="checkout()">Checkout</button>
+    </div>
+  </header>
+
+  <section class="controls">
+    <input type="text" id="search-input" placeholder="Search products..." oninput="renderProducts()" />
+    <select id="price-filter" onchange="renderProducts()">
+      <option value="all">All Prices</option>
+      <option value="0-20">Under $20</option>
+      <option value="21-50">$21 to $50</option>
+    </select>
+  </section>
+
+  <main>
+    <div class="product-list" id="product-list"></div>
+    <div id="cart-message"></div>
+  </main>
+
+  <script>
+    const products = [
+      {
+        id: 1,
+        name: "Cool T-Shirt",
+        price: 20,
+        image: "C:\Users\Uday Kiran Reddy\OneDrive\Desktop\7\images\tshirt.jpg"  // Put your local or URL path here
+      },
+      {
+        id: 2,
+        name: "Stylish Hat",
+        price: 15,
+        image: "C:\Users\Uday Kiran Reddy\OneDrive\Desktop\7\images\hat.jpg"
+      },
+      {
+        id: 3,
+        name: "Sneakers",
+        price: 50,
+        image: "C:\Users\Uday Kiran Reddy\OneDrive\Desktop\7\images\sneakers.jpg"
+      },
+      {
+        id: 4,
+        name: "Sunglasses",
+        price: 30,
+        image: "C:\Users\Uday Kiran Reddy\OneDrive\Desktop\7\images\sunglasses.jpg"
+      }
+    ];
+
+    let cart = [];
+
+    function renderProducts() {
+      const productList = document.getElementById('product-list');
+      const searchValue = document.getElementById('search-input').value.toLowerCase();
+      const filterValue = document.getElementById('price-filter').value;
+
+      let filtered = products.filter(p => p.name.toLowerCase().includes(searchValue));
+
+      if (filterValue !== 'all') {
+        const [min, max] = filterValue.split('-').map(Number);
+        filtered = filtered.filter(p => p.price >= min && p.price <= max);
+      }
+
+      productList.innerHTML = filtered.map(product => `
+        <div class="product-card">
+          <img src="${product.image}" alt="${product.name}" loading="lazy" />
+          <h2>${product.name}</h2>
+          <p>$${product.price.toFixed(2)}</p>
+          <button onclick="addToCart(${product.id})">Add to Cart</button>
+        </div>
+      `).join('');
+    }
+
+    function addToCart(productId) {
+      const product = products.find(p => p.id === productId);
+      cart.push(product);
+      document.getElementById('cart-count').textContent = cart.length;
+      const message = document.getElementById('cart-message');
+      message.textContent = `${product.name} added to cart!`;
+      message.style.color = "green";
+      setTimeout(() => message.textContent = "", 2000);
+    }
+
+    function checkout() {
+      if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+      }
+      let total = cart.reduce((sum, item) => sum + item.price, 0);
+      alert(`You have ${cart.length} items. Total: $${total.toFixed(2)}`);
+      cart = [];
+      document.getElementById('cart-count').textContent = "0";
+    }
+
+    renderProducts();
+  </script>
+</body>
+
+</html>
